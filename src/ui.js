@@ -184,7 +184,6 @@ import {
   normalizeHeading,
   relativeBearing,
   resolveCockpitContextReadout,
-  resolveHudRailLayout,
   resolveTrackedAircraftInfo,
   slewHeading,
   speedRulerTicks,
@@ -6864,7 +6863,8 @@ export class StyleManager {
   _syncRightPanelAdaptiveLayout() {
     layoutRightPanelRail({
       stack: this._rightPanelStack,
-      obstacles: document.querySelectorAll(RIGHT_STACK_OBSTACLE_SELECTOR),
+      getObstacles: () =>
+        document.querySelectorAll(RIGHT_STACK_OBSTACLE_SELECTOR),
       windowRef: window,
       hud: { visible: this.hud.visible, variant: this.hud.getVariant() },
       preferredPanelId: this._rightStackPreferredPanelId,
@@ -6988,7 +6988,8 @@ export class StyleManager {
   _syncLeftPanelAdaptiveLayout() {
     layoutLeftPanelRail({
       stack: this._leftPanelStack,
-      obstacles: document.querySelectorAll(LEFT_STACK_OBSTACLE_SELECTOR),
+      getObstacles: () =>
+        document.querySelectorAll(LEFT_STACK_OBSTACLE_SELECTOR),
       windowRef: window,
       hud: { visible: this.hud.visible, variant: this.hud.getVariant() },
       preferredPanelId: this._leftStackPreferredPanelId,

@@ -5,6 +5,7 @@ import {
   resolvePanelStackCorridor,
 } from '../panelStackLayout.js';
 import { measurePanelNaturalHeight } from './panelMeasurement.js';
+import { iterateVisibleObstacles } from './panelRailGeometry.js';
 
 /**
  * Measure and place the left panel rail for one synchronous layout pass.
@@ -12,7 +13,8 @@ import { measurePanelNaturalHeight } from './panelMeasurement.js';
  * persistence. Auto-collapse is presentation only and reports through callbacks.
  * @param {object} options Live DOM and caller policy.
  * @param {HTMLElement} options.stack Rail element.
- * @param {Iterable<HTMLElement>} options.obstacles Caller-selected obstacle nodes.
+ * @param {Function} options.getObstacles Lazily returns caller-selected obstacle
+ *   nodes; only invoked once the rail is known to need obstacle geometry.
  * @param {Window} options.windowRef Viewport and style reader.
  * @param {{visible: boolean, variant: string}} options.hud Current HUD presentation.
  * @param {string} options.preferredPanelId Most recently opened panel.
@@ -24,7 +26,7 @@ import { measurePanelNaturalHeight } from './panelMeasurement.js';
  */
 export function layoutLeftPanelRail({
   stack,
-  obstacles,
+  getObstacles,
   windowRef,
   hud,
   preferredPanelId,
@@ -73,23 +75,11 @@ export function layoutLeftPanelRail({
   let safeBottom = viewportHeight - baseBottomInset;
   const bottomObstacles = [];
 
-  for (const obstacle of obstacles) {
-    if (stack.contains(obstacle)) continue;
-    let hiddenByAncestor = false;
-    for (let element = obstacle; element; element = element.parentElement) {
-      const style = getComputedStyle(element);
-      if (
-        style.display === 'none' ||
-        style.visibility === 'hidden' ||
-        Number(style.opacity) === 0
-      ) {
-        hiddenByAncestor = true;
-        break;
-      }
-    }
-    if (hiddenByAncestor) continue;
-    const rect = obstacle.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) continue;
+  for (const { rect } of iterateVisibleObstacles(
+    getObstacles(),
+    stack,
+    getComputedStyle,
+  )) {
     const overlapsHorizontally =
       rect.right > stackRect.left && rect.left < stackRect.right;
     if (!overlapsHorizontally) continue;

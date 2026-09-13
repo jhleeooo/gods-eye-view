@@ -96,7 +96,7 @@ function fixture(
     stack,
     hud,
     documentRef,
-    obstacles: [],
+    getObstacles: () => [],
     collapsedHeights: new Map(),
     windowRef: {
       innerHeight: 900,
@@ -156,7 +156,7 @@ test('left corridor respects a lower obstacle but ignores an obstacle hidden by 
   const hidden = element('hidden', { top: 300, height: 80 });
   hidden.parentElement = element('hidden-parent');
   hidden.parentElement.computed.opacity = '0';
-  f.options.obstacles = [blocker, hidden];
+  f.options.getObstacles = () => [blocker, hidden];
   f.run();
   assert.equal(Number(f.stack.dataset.safeBottomPct), 65.47);
 });
@@ -245,7 +245,7 @@ test('right rail aligns to the current left rail and excludes hidden obstacles',
   f.options.leftStack.rect.top = 200;
   const hidden = element('hidden', { left: 1100, top: 100, height: 200 });
   hidden.computed.display = 'none';
-  f.options.obstacles = [hidden];
+  f.options.getObstacles = () => [hidden];
   f.run();
   assert.equal(f.stack.dataset.safeTop, '200.0');
 });

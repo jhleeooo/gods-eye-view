@@ -62,6 +62,38 @@ export function resolveHudRailLayout({
 }
 
 /**
+ * Yield each obstacle rect that can actually occlude the rail: elements
+ * inside the rail itself are excluded, as are elements hidden via an
+ * ancestor's `display`/`visibility`/`opacity` or that currently render at
+ * zero size.
+ * @param {Iterable<HTMLElement>} obstacles Candidate obstacle nodes.
+ * @param {HTMLElement} stack Rail element obstacles must fall outside of.
+ * @param {Function} getComputedStyle DOM style reader.
+ * @returns {Generator<{element: HTMLElement, rect: DOMRect}>}
+ */
+export function* iterateVisibleObstacles(obstacles, stack, getComputedStyle) {
+  for (const element of obstacles) {
+    if (stack.contains(element)) continue;
+    let hiddenByAncestor = false;
+    for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor);
+      if (
+        style.display === 'none' ||
+        style.visibility === 'hidden' ||
+        Number(style.opacity) === 0
+      ) {
+        hiddenByAncestor = true;
+        break;
+      }
+    }
+    if (hiddenByAncestor) continue;
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) continue;
+    yield { element, rect };
+  }
+}
+
+/**
  * Tactical HUD gives an expanded right-rail panel the whole control lane.
  * Other HUD layouts keep collapsed launchers visible for quick switching.
  *

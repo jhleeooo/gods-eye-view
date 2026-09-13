@@ -18,12 +18,12 @@ import {
   normalizeHeading,
   relativeBearing,
   resolveCockpitContextReadout,
-  resolveHudRailLayout,
   resolveTrackedAircraftInfo,
   slewHeading,
   speedRulerStep,
   speedRulerTicks,
 } from './cockpitMath.js';
+import { resolveHudRailLayout } from './ui/panelRailGeometry.js';
 
 test('cockpit presentation updates are throttled independently of camera frames', () => {
   assert.equal(cockpitUiUpdateDue(1000, 0, 100), true);

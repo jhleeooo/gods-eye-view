@@ -1,5 +1,3 @@
-export { resolveHudRailLayout } from './ui/panelRailGeometry.js';
-
 /** Normalize a heading into the [0, 360) range. */
 export function normalizeHeading(value) {
   if (!Number.isFinite(value)) return 0;

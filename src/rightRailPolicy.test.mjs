@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import {
-  shouldExpandGlobalContextPanel,
-  shouldHideCollapsedRightPanels,
-} from './rightRailPolicy.js';
+import { shouldExpandGlobalContextPanel } from './rightRailPolicy.js';
+import { shouldHideCollapsedRightPanels } from './ui/panelRailGeometry.js';
 
 test('Tactical HUD hides collapsed right-rail siblings while one panel is expanded', () => {
   assert.equal(shouldHideCollapsedRightPanels({
